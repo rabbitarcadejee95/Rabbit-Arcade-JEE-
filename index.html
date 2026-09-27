@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rabbit Arcade JWE</title>
+<style>
+body{font-family:Arial,sans-serif;margin:0;background:#f5f7fb;color:#182033}
+header{background:#111827;color:white;padding:22px;text-align:center}
+main{max-width:900px;margin:auto;padding:20px}
+.card{background:white;border-radius:16px;padding:18px;margin:14px 0;box-shadow:0 4px 16px #0001}
+button{border:0;border-radius:10px;padding:10px 14px;background:#2563eb;color:white;cursor:pointer;margin:5px}
+input[type=file]{display:block;margin:12px 0}
+.section{margin-top:12px;padding:14px;border:1px solid #e5e7eb;border-radius:12px}
+a{display:block;margin:8px 0;color:#2563eb}
+</style>
+</head>
+<body>
+<header><h1>Rabbit Arcade JWE</h1><p>Study Material</p></header>
+<main id="app"></main>
+<script>
+const subjects=["Physics","Chemistry","Math"];
+const sections=["Module","DPB","Short Notes"];
+let data=JSON.parse(localStorage.getItem("rabbitArcadeJWE")||"{}");
+function save(){localStorage.setItem("rabbitArcadeJWE",JSON.stringify(data));}
+function render(){
+ app.innerHTML=subjects.map(s=>`<div class="card"><h2>${s}</h2>`+
+ sections.map(sec=>`<div class="section"><h3>${sec}</h3>
+ <input type="file" multiple accept=".pdf" onchange="addFiles(event,'${s}','${sec}')">
+ <div>${(data[s]?.[sec]||[]).map((f,i)=>`<a href="${f.url}" download="${f.name}">📄 ${f.name}</a>`).join("")||"<small>अभी कोई PDF नहीं जोड़ी गई।</small>"}</div>
+ </div>`).join("")+"</div>").join("");
+}
+function addFiles(e,s,sec){
+ data[s]??={}; data[s][sec]??=[];
+ [...e.target.files].forEach(file=>{
+   const r=new FileReader();
+   r.onload=()=>{data[s][sec].push({name:file.name,url:r.result});save();render();};
+   r.readAsDataURL(file);
+ });
+}
+render();
+</script>
+</body>
+</html>
